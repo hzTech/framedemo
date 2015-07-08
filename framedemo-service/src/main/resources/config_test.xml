@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans profile="!prod" xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!--定义数据源-->
+    <bean name="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <!-- 指定连接数据库的驱动 -->
+        <property name="driverClass" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+        <!-- 指定连接数据库的URL，这个地址是错的，公司服务器，肿么可能给你们，理想状态见config_test.xml，指定数据源就好啦 -->
+        <property name="jdbcUrl" value="jdbc:sqlserver://115.28.160.111:1433;DatabaseName=HotMicroMall_Test"/>
+        <!-- 指定连接数据库的用户名 -->
+        <property name="user" value="mall"/>
+        <!-- 指定连接数据库的密码 -->
+        <!--property name="password" value="!"/-->
+        <property name="password" value="root"/>
+        <!-- 指定连接数据库连接池的最大连接数 -->
+        <property name="maxPoolSize" value="40"/>
+        <!-- 指定连接数据库连接池的最小连接数 -->
+        <property name="minPoolSize" value="1"/>
+        <!-- 指定连接数据库连接池的初始化连接数 -->
+        <property name="initialPoolSize" value="1"/>
+        <!-- 指定连接数据库连接池的连接的最大空闲时间 -->
+        <property name="maxIdleTime" value="20"/>
+    </bean>
+
+    <!--定义jpa entitymanagerfactory-->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <!--数据源指定-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--支持注解搜索的包路径-->
+        <property name="packagesToScan" value="com.hztech.framedemo.service.bean"/>
+        <property name="persistenceUnitName" value="basePu"/>
+        <!--配置jpa支持，这里是hibernate，也有可能是其他orm框架，eclipselink-->
+        <property name="persistenceProvider">
+            <bean class="org.hibernate.jpa.HibernatePersistenceProvider"/>
+        </property>
+        <!--jpa 一些配置，如数据库类型，数据库方言等-->
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="database" value="SQL_SERVER"/>
+                <property name="databasePlatform" value="org.hibernate.dialect.SQLServer2008Dialect"/>
+                <property name="showSql" value="false"/>
+            </bean>
+        </property>
+        <!--jpa 方言，这里使用hibernate的方言-->
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+        <!--jpa属性配置-->
+        <property name="jpaPropertyMap">
+            <map>
+                <entry key="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+                <entry key="hibernate.query.substitutions" value="true 1, false 0"/>
+                <entry key="hibernate.default_batch_fetch_size" value="16"/>
+                <entry key="hibernate.max_fetch_depth" value="2"/>
+                <entry key="hibernate.generate_statistics" value="true"/>
+                <entry key="hibernate.bytecode.use_reflection_optimizer" value="true"/>
+                <entry key="hibernate.cache.use_second_level_cache" value="false"/>
+                <entry key="hibernate.cache.use_query_cache" value="false"/>
+                <entry key="hibernate.hbm2ddl.auto" value="update"/>
+                <entry key="hibernate.show_sql" value="false"/>
+            </map>
+        </property>
+    </bean>
+</beans>
